@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silueta Auto-Imagen - Cuestionario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            background: #FFFFFF;
+            color: #2F2F2F;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Start Screen */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .start-screen h1 {
+            font-size: 36px;
+            color: #B85042;
+            margin-bottom: 10px;
+            font-family: 'Cambria', serif;
+        }
+
+        .start-screen .subtitle {
+            font-size: 16px;
+            color: #A7BEAE;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #F9F7F4;
+            padding: 20px;
+            border-left: 4px solid #B85042;
+            margin-bottom: 30px;
+            text-align: left;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-box strong {
+            color: #B85042;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #B85042;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #A74038;
+        }
+
+        .btn-secondary {
+            background: #E7E8D1;
+            color: #2F2F2F;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #D9DAB8;
+        }
+
+        .btn-disabled {
+            background: #CCC;
+            cursor: not-allowed;
+        }
+
+        /* Questionnaire Screen */
+        .questionnaire-screen {
+            padding: 20px 0;
+        }
+
+        .progress {
+            text-align: center;
+            color: #B85042;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #E7E8D1;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #B85042;
+            transition: width 0.3s;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question-container h2 {
+            font-size: 22px;
+            color: #2F2F2F;
+            margin-bottom: 8px;
+            font-family: 'Cambria', serif;
+        }
+
+        .question-container .description {
+            font-size: 14px;
+            color: #A7BEAE;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 15px;
+            text-align: left;
+            background: #F9F7F4;
+            color: #2F2F2F;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #E7E8D1;
+        }
+
+        .option-btn.selected {
+            background: #B85042;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            padding: 20px 0;
+        }
+
+        .results-screen h2 {
+            font-size: 32px;
+            color: #B85042;
+            margin-bottom: 15px;
+            font-family: 'Cambria', serif;
+        }
+
+        .result-box {
+            background: #F9F7F4;
+            padding: 20px;
+            border-left: 4px solid #B85042;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .result-box p {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            color: #2F2F2F;
+        }
+
+        .result-box strong {
+            color: #B85042;
+        }
+
+        .result-box.impact {
+            background: #FFF3E0;
+            border-left-color: #B85042;
+        }
+
+        .result-box.plan {
+            background: #E7F5F4;
+            border-left-color: #A7BEAE;
+        }
+
+        .areas-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .areas-list li {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .question-box {
+            background: #FAFAF0;
+            padding: 20px;
+            text-align: center;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .question-box .label {
+            font-size: 13px;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .question-box p {
+            font-size: 16px;
+            color: #B85042;
+            font-weight: bold;
+        }
+
+        .download-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-download {
+            background: #A7BEAE;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-download:hover {
+            background: #94A893;
+        }
+
+        .btn-restart {
+            background: #E7E8D1;
+            color: #2F2F2F;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-restart:hover {
+            background: #D9DAB8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div class="screen active start-screen" id="startScreen">
+            <h1>Cuestionario Interactivo</h1>
+            <p class="subtitle">Descubre tu patrón de silueta auto-imagen</p>
+            
+            <div class="info-box">
+                <p><strong>📱 Abre tu celular</strong></p>
+                <p>Vas a responder 8 preguntas honestas. Toma 8-10 minutos.</p>
+                <p><strong>✓ Sé honesto</strong> — no hay respuestas correctas</p>
+                <p><strong>✓ Responde solo para ti</strong> — no compartiremos</p>
+                <p><strong>✓ Al final, recibirás tu diagnóstico y tu plan</strong></p>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startQuestionnaire()">Empezar</button>
+        </div>
+
+        <!-- Questionnaire Screen -->
+        <div class="screen questionnaire-screen" id="questionnaireScreen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress" id="progressText">1 de 8</div>
+
+            <div id="questionsContainer"></div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousQuestion()">Atrás</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen results-screen" id="resultsScreen">
+            <h2 id="patternTitle"></h2>
+            
+            <div class="result-box">
+                <p id="patternDesc"></p>
+            </div>
+
+            <div class="result-box impact">
+                <p><strong>Cómo aparece en ti:</strong></p>
+                <ul class="areas-list" id="areasList"></ul>
+            </div>
+
+            <div class="result-box impact">
+                <p><strong>Impacto:</strong> <span id="impactText"></span></p>
+            </div>
+
+            <div class="result-box plan">
+                <p><strong>Tu Plan Esta Semana:</strong></p>
+                <p id="planText"></p>
+            </div>
+
+            <div class="question-box">
+                <p class="label">La pregunta que te llevas esta semana:</p>
+                <p>¿Cuál es el costo real de esta brecha?</p>
+            </div>
+
+            <div class="download-group">
+                <button class="btn-download" onclick="downloadDiagnostico()">📥 Descargar Mi Diagnóstico</button>
+                <button class="btn-restart" onclick="restartQuestionnaire()">Hacer de Nuevo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const preguntas = [
+            {
+                id: 'autoImagen',
+                pregunta: '¿Cómo te ves realmente?',
+                desc: 'Sin filtros. Honestamente.',
+                opciones: [
+                    { texto: 'Capaz, pero con dudas', valor: 'capaz_dudoso' },
+                    { texto: 'Competente, pero oculto vulnerabilidades', valor: 'competente_oculto' },
+                    { texto: 'Imperfecto, pero auténtico', valor: 'imperfecto_autentico' },
+                    { texto: 'Frágil, que otros no vean debilidades', valor: 'fragil' }
+                ]
+            },
+            {
+                id: 'imagenIdeal',
+                pregunta: '¿Quién crees que DEBERÍAS ser?',
+                desc: 'La presión interna. El "ideal" que cargas.',
+                opciones: [
+                    { texto: 'Perfecto, sin errores', valor: 'perfecto' },
+                    { texto: 'Fuerte, invulnerable', valor: 'invulnerable' },
+                    { texto: 'Exitoso, admirado', valor: 'exitoso' },
+                    { texto: 'Coherente todo el tiempo', valor: 'coherente' }
+                ]
+            },
+            {
+                id: 'brecha',
+                pregunta: '¿Qué tan grande es la brecha entre ambos?',
+                desc: 'Honestamente.',
+                opciones: [
+                    { texto: 'Pequeña, casi no existe', valor: 'pequena' },
+                    { texto: 'Moderada, la siento a veces', valor: 'moderada' },
+                    { texto: 'Grande, es agotador', valor: 'grande' },
+                    { texto: 'Enorme, es casi dolorosa', valor: 'enorme' }
+                ]
+            },
+            {
+                id: 'trabajo',
+                pregunta: 'En el trabajo, ¿cómo aparece tu patrón?',
+                desc: 'Elige lo más identificado.',
+                opciones: [
+                    { texto: 'Digo que sí a todo, no muestro límites', valor: 'trabajo_si_todo' },
+                    { texto: 'Mantengo distancia profesional, pocas vulnerabilidades', valor: 'trabajo_distancia' },
+                    { texto: 'Perfeccionista, temo al error', valor: 'trabajo_perfeccion' },
+                    { texto: 'Incoherente: líder en junta, diferente en privado', valor: 'trabajo_incoherente' }
+                ]
+            },
+            {
+                id: 'redes',
+                pregunta: '¿Cómo es tu presencia en redes?',
+                desc: 'TikTok, Instagram, WhatsApp, LinkedIn.',
+                opciones: [
+                    { texto: 'Compartís mucho, pero lo "bonito"', valor: 'redes_bonito' },
+                    { texto: 'Casi no compartís, más privado', valor: 'redes_privado' },
+                    { texto: 'Curado al detalle, como debe verse', valor: 'redes_curado' },
+                    { texto: 'Diferente en cada plataforma', valor: 'redes_diferente' }
+                ]
+            },
+            {
+                id: 'familia',
+                pregunta: 'En la familia, ¿eres diferente?',
+                desc: 'Casa vs. oficina.',
+                opciones: [
+                    { texto: 'Muy diferente, soy "más fuerte" en público', valor: 'fam_fuerte_publico' },
+                    { texto: 'Un poco diferente, controlado en ambos lados', valor: 'fam_controlado' },
+                    { texto: 'Bastante similar', valor: 'fam_similar' },
+                    { texto: 'Radicalmente diferente, nadie me conoce realmente', valor: 'fam_radical' }
+                ]
+            },
+            {
+                id: 'decisiones',
+                pregunta: '¿Cómo tomas decisiones?',
+                desc: 'Trabajo, dinero, relaciones, carrera.',
+                opciones: [
+                    { texto: 'Basado en lo que "debo hacer"', valor: 'dec_debo' },
+                    { texto: 'Basado en lo que otros esperan', valor: 'dec_otros' },
+                    { texto: 'Basado en lo que me importa, aunque sea riesgoso', valor: 'dec_importa' },
+                    { texto: 'Mixto, intento balancear', valor: 'dec_balance' }
+                ]
+            },
+            {
+                id: 'energia',
+                pregunta: '¿Cómo te sientes emocionalmente?',
+                desc: 'A nivel de energía y paz mental.',
+                opciones: [
+                    { texto: 'Ansioso, siempre hay algo que validar', valor: 'energia_ansioso' },
+                    { texto: 'Agotado de fingir', valor: 'energia_agotado' },
+                    { texto: 'Avergonzado de la brecha', valor: 'energia_avergonzado' },
+                    { texto: 'En paz, bastante coherente', valor: 'energia_paz' }
+                ]
+            }
+        ];
+
+        const patrones = {
+            perfeccionista: {
+                titulo: '🎯 El Perfeccionista',
+                desc: 'Crees que debes ser impecable. Cualquier error genera vergüenza o ansiedad.',
+                impacto: 'Tus decisiones están contaminadas por el miedo al fracaso. En redes, solo muestras lo pulido. El equipo te ve como distante.',
+                areas: ['trabajo', 'redes', 'decisiones'],
+                plan: 'Esta semana: Comparte un pequeño "error" o vulnerabilidad con alguien de confianza. Observa qué pasa.'
+            },
+            invisible: {
+                titulo: '🫥 El Invisible',
+                desc: 'Ocultas vulnerabilidades para mantener la imagen de "fuerte". Pocos te conocen realmente.',
+                impacto: 'Tu equipo siente distancia, no se atreve a pedir ayuda. En relaciones, luchas para conectar. Es exhaustivo ser siempre impenetrable.',
+                areas: ['familia', 'trabajo', 'relaciones'],
+                plan: 'Esta semana: Muestra una limitación genuina a alguien cercano. Cuéntale algo que luches por hacer.'
+            },
+            impostor: {
+                titulo: '😰 El Impostor',
+                desc: 'Sientes que no mereces tu posición. Constantemente validas tu lugar, aunque seas competente.',
+                impacto: 'Tus decisiones se retrasan por validación externa. Tu credibilidad sufre porque dudas de ti mismo. El equipo lo nota.',
+                areas: ['trabajo', 'decisiones', 'energia'],
+                plan: 'Esta semana: Documenta 3 cosas que hiciste bien. Reconoce tu competencia sin relativizar.'
+            },
+            fragmentado: {
+                titulo: '🔀 El Fragmentado',
+                desc: 'Eres radicalmente diferente en cada contexto. La integración es baja.',
+                impacto: 'Nadie te conoce completo. El equipo ve incoherencia (exigente en privado, diferente en público). Es agotador ser "muchas personas".',
+                areas: ['familia', 'trabajo', 'redes'],
+                plan: 'Esta semana: Elige un espacio y sé un 10% más auténtico. Pequeño cambio, observa consecuencias.'
+            }
+        };
+
+        const mapeo = {
+            'perfecto': 'perfeccionista',
+            'invulnerable': 'invisible',
+            'exitoso': 'impostor',
+            'coherente': 'perfeccionista',
+            'trabajo_perfeccion': 'perfeccionista',
+            'redes_curado': 'perfeccionista',
+            'trabajo_distancia': 'invisible',
+            'redes_privado': 'invisible',
+            'trabajo_si_todo': 'impostor',
+            'dec_otros': 'impostor',
+            'trabajo_incoherente': 'fragmentado',
+            'redes_diferente': 'fragmentado',
+            'fam_radical': 'fragmentado',
+            'fam_fuerte_publico': 'fragmentado'
+        };
+
+        let respuestas = {};
+        let currentQuestion = 0;
+
+        function startQuestionnaire() {
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('questionnaireScreen').classList.add('active');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            preguntas.forEach((preg, idx) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container' + (idx === currentQuestion ? ' active' : '');
+                questionDiv.innerHTML = `
+                    <h2>${preg.pregunta}</h2>
+                    <p class="description">${preg.desc}</p>
+                    <div class="options">
+                        ${preg.opciones.map(opc => `
+                            <button class="option-btn ${respuestas[preg.id] === opc.valor ? 'selected' : ''}" 
+                                    onclick="selectOption('${preg.id}', '${opc.valor}')">
+                                ${opc.texto}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectOption(preguntaId, valor) {
+            respuestas[preguntaId] = valor;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < preguntas.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else if (Object.keys(respuestas).length === preguntas.length) {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / preguntas.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = (currentQuestion + 1) + ' de ' + preguntas.length;
+        }
+
+        function updateButtons() {
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentQuestion === preguntas.length - 1 && Object.keys(respuestas).length === preguntas.length) {
+                nextBtn.textContent = 'Ver Resultado';
+            } else {
+                nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function calculateResults() {
+            const valores = Object.values(respuestas);
+            let puntos = {
+                perfeccionista: 0,
+                invisible: 0,
+                impostor: 0,
+                fragmentado: 0
+            };
+
+            valores.forEach(v => {
+                if (mapeo[v]) puntos[mapeo[v]]++;
+            });
+
+            const patron = Object.keys(puntos).reduce((a, b) => 
+                puntos[a] > puntos[b] ? a : b
+            );
+
+            return { patron, ...patrones[patron] };
+        }
+
+        function showResults() {
+            const resultado = calculateResults();
+            
+            document.getElementById('questionnaireScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+
+            document.getElementById('patternTitle').textContent = resultado.titulo;
+            document.getElementById('patternDesc').textContent = resultado.desc;
+            document.getElementById('impactText').textContent = resultado.impacto;
+            document.getElementById('planText').textContent = resultado.plan;
+
+            const areasList = document.getElementById('areasList');
+            areasList.innerHTML = '';
+            resultado.areas.forEach(area => {
+                const li = document.createElement('li');
+                li.textContent = area.charAt(0).toUpperCase() + area.slice(1);
+                areasList.appendChild(li);
+            });
+        }
+
+        function downloadDiagnostico() {
+            const resultado = calculateResults();
+            const contenido = `SILUETA AUTO-IMAGEN — TU DIAGNÓSTICO PERSONAL
+=====================================
+
+Tu Patrón: ${resultado.titulo}
+
+${resultado.desc}
+
+CÓMO APARECE EN TI:
+${resultado.areas.map(a => `• ${a.charAt(0).toUpperCase() + a.slice(1)}`).join('\n')}
+
+IMPACTO:
+${resultado.impacto}
+
+TU PLAN ESTA SEMANA:
+${resultado.plan}
+
+LA PREGUNTA:
+¿Cuál es el costo real de mantener esta brecha?
+Energía. Relaciones. Credibilidad. Paz mental.
+
+---
+Generado en Taller Pantaleon — Silueta Auto-Imagen`;
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(contenido));
+            element.setAttribute('download', 'Tu_Diagnostico_SiluetaAutoImagen.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function restartQuestionnaire() {
+            respuestas = {};
+            currentQuestion = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('startScreen').classList.add('active');
+        }
+    </script>
+</body>
+</html>
